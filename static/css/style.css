@@ -1,0 +1,13 @@
+.bg-cover{
+    background-image: url("../images/transaction_background2.jpg");
+    background-size: 950px 500px;
+    background-repeat: no-repeat;
+}
+
+.file-input{
+    color: white;
+}
+
+body{
+    background-color: rgba(169, 110, 83, 0.30);
+}
