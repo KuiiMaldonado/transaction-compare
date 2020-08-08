@@ -67,17 +67,21 @@ def getMaxSize(sortedClient, sortedTutuka):
 ##
 def reconciliation(client_df, tutuka_df, f1_name, f2_name):
 
-    #Column names lis to create the unmatched and possible dataframes
-    unmatchedColumns = ["FileName","TransactionID", "TransactionDate", "TransactionAmount", "TransactionNarrative"]
-
     #emptyDict stores in a dictionary all the column names of a dataframe as keys and empty values.
     #This variable helps out in the process of creating an empty row using the insertEmptyRow declared before.
     emptyDict = {}
     for column in client_df.columns:
         emptyDict[column] = ""
 
+    #Column names list to create the unmatched dataframe
+    unmatchedColumns = ["FileName","TransactionID", "TransactionDate", "TransactionAmount", "TransactionNarrative"]
+
+    #Column names list to create the possible dataframe
+    possibleColumns = ["TransactionID", "TransactionDate", "TransactionAmount", "TransactionNarrative", 
+                        "TransactionID_2", "TransactionDate_2", "TransactionAmount_2", "TransactionNarrative_2"]
+
     unmatched_df = pd.DataFrame(columns=unmatchedColumns)
-    #possible_df = pd.DataFrame(columns=columns)
+    possible_df = pd.DataFrame(columns=possibleColumns)
 
     #Sort client dataframe by TransactionID (ascending order) so its easier to find possible matches.
     sortedClient = sortDataFrame(client_df, "TransactionID", True)
@@ -146,7 +150,13 @@ def reconciliation(client_df, tutuka_df, f1_name, f2_name):
                     else:
                         #Here it means transactions have the same ID but have at least one column different so they are a possible match.
                         clientPossible += 1
-                        tutukaPossible += 1              
+                        tutukaPossible += 1
+
+                        #We add the possible match to the possible_df
+                        possible_df = possible_df.append({"TransactionID":clientRow["TransactionID"], "TransactionDate":clientRow["TransactionDate"],
+                                                        "TransactionAmount":clientRow["TransactionAmount"], "TransactionNarrative":clientRow["TransactionNarrative"],
+                                                        "TransactionID_2":tutukaRow["TransactionID"], "TransactionDate_2":tutukaRow["TransactionDate"],
+                                                        "TransactionAmount_2":tutukaRow["TransactionAmount"], "TransactionNarrative_2":tutukaRow["TransactionNarrative"]}, ignore_index=True)              
             else:
                 #The ID's are not the same so we will check which ID is bigger. The biggest ID will have an empty row inserted before him.
                 #With this method we ensure we check for same ID's even if they are in different dataframe index.
@@ -193,6 +203,7 @@ def reconciliation(client_df, tutuka_df, f1_name, f2_name):
             clientMismatch = clientMismatch + (clientLen - index)
             while(index < maxIndex):
                 clientRow = sortedClient.iloc[index]
+
                 #We add the mismatch to the unmatched_df
                 unmatched_df = unmatched_df.append({"FileName":f1_name, "TransactionID":clientRow["TransactionID"], "TransactionDate":clientRow["TransactionDate"],
                                                         "TransactionAmount":clientRow["TransactionAmount"], "TransactionNarrative":clientRow["TransactionNarrative"]}, ignore_index=True)
@@ -202,6 +213,7 @@ def reconciliation(client_df, tutuka_df, f1_name, f2_name):
             tutukaMismatch = tutukaMismatch + (tutukaLen - index)
             while(index < maxIndex):
                 tutukaRow = sortedTutuka.iloc[index]
+
                 #We add the mismatch to the unmatched_df
                 unmatched_df = unmatched_df.append({"FileName":f1_name, "TransactionID":clientRow["TransactionID"], "TransactionDate":clientRow["TransactionDate"],
                                                         "TransactionAmount":clientRow["TransactionAmount"], "TransactionNarrative":clientRow["TransactionNarrative"]}, ignore_index=True)
@@ -211,17 +223,22 @@ def reconciliation(client_df, tutuka_df, f1_name, f2_name):
     reconData = {'file1':{'name':"", "total":0, "matches":0, "possible":0, "mismatches":0},
                 'file2':{'name':"", "total":0, "matches":0, "possible":0, "mismatches":0}}
 
+    #Adding file 1 data to the dictionary
     reconData["file1"]["name"] = f1_name
     reconData["file1"]["total"] = clientMatch + clientPossible + clientMismatch
     reconData["file1"]["matches"] = clientMatch
     reconData["file1"]["possible"] = clientPossible
     reconData["file1"]["mismatches"] = clientMismatch
-
+    #Adding file 2 data to the dictionary
     reconData["file2"]["name"] = f2_name
     reconData["file2"]["total"] = tutukaMatch + tutukaPossible + tutukaMismatch
     reconData["file2"]["matches"] = tutukaMatch
     reconData["file2"]["possible"] = tutukaPossible
     reconData["file2"]["mismatches"] = tutukaMismatch
+
+    #Parsing the dataframes as dictionaries and save them in the response dictionary.
+    reconData["unmatched"] = unmatched_df.to_dict("index")
+    reconData["possible"] = possible_df.to_dict("index")
 
     #Return the data dictionary
     return reconData
@@ -232,16 +249,13 @@ app = Flask(__name__)
 
 @app.route("/transaction-compare")
 def home():
-
-    #Initialize dictionary to show values when reaching /transaction-compare endpoint
-    reconData = {'file1':{'name':"Client File", "total":0, "matches":0, "possible":0, "mismatches":0},
-                'file2':{'name':"Company File", "total":0, "matches":0, "possible":0, "mismatches":0}}
-
-    return render_template("index.html", data=reconData)
+    #render the index.html
+    return render_template("index.html")
 
 @app.route("/reconciliation", methods = ["GET", "POST"])
 def upload_files():
     if request.method == "POST":
+        #Get the uploaded files
         f1 = request.files["file1"]
         f2 = request.files["file2"]
         
@@ -251,13 +265,8 @@ def upload_files():
         tutuka_df = pd.read_csv(f2.stream, index_col=False)
 
         reconData = reconciliation(client_df, tutuka_df, f1.filename, f2.filename)
-        return render_template("index.html", data=reconData)
-
-#@app.route("/API")
-#def getUnmatchedData():
-    #unmatched_df = getDataFrame()
-    #print(unmatched_df)
-    #return unmatched_df.to_json(orient="split")
+        #jsonify the data and git it as response
+        return jsonify(reconData)
 
 if __name__ == "__main__":
     app.run(debug=True)
