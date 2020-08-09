@@ -4,6 +4,7 @@
 #Import dependencies
 import pandas as pd
 from flask import Flask, render_template, request, redirect, jsonify
+from flask_cors import CORS, cross_origin
 from werkzeug.utils import secure_filename
 
 #Beginning of the reconciliation script
@@ -250,14 +251,17 @@ def reconciliation(client_df, tutuka_df, f1_name, f2_name):
 
 #Beginning of flask app
 app = Flask(__name__)
+CORS(app, support_credentials=True)
 
-@app.route("/transaction-compare")
-def home():
+@app.route("/")
+@cross_origin(supports_credentials=True)
+def index():
     #render the index.html
     return render_template("index.html")
 
 @app.route("/reconciliation", methods = ["GET", "POST"])
-def upload_files():
+@cross_origin(supports_credentials=True)
+def processing():
     if request.method == "POST":
         #Get the uploaded files
         f1 = request.files["file1"]
