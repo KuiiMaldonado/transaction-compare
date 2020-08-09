@@ -36,6 +36,7 @@ $(function(){
             updateFile1(data);
             updateFile2(data);
             response = data;
+            document.getElementById("unmatched-button").disabled = false;
         });
     });
 });
@@ -43,22 +44,46 @@ $(function(){
 //Function to create both tables (unmatched reports and possible match reports)
 function showTables()
 {
+    deletePreviousTables();
     showUnmatchedTable();
     showPossibleTable();
 }
 
-//Function to create the headers of the unmtached table depending on how it is received on the response
+//Function to delete table child elements of both tables
+function deletePreviousTables()
+{
+    d3.select("#unmatched-table > thead").selectAll("*").remove();
+    d3.select("#unmatched-table > tbody").selectAll("*").remove();
+
+    d3.select("#possible-table > thead").selectAll("*").remove();
+    d3.select("#possible-table > tbody").selectAll("*").remove();
+}
+
+//Function to create the headers of the unmtached table 
 function tableHeaders()
 {
-    var row = unmatched_tHead.append("tr");
-    Object.entries(response["unmatched"]["0"]).forEach(([key, value]) => {
-        var cell = row.append("th").classed("table-head", true);
-        cell.text(key);
-    });
+    //Append a row to display de columns name in the desired order
+    row = unmatched_tHead.append("tr");
+
+    //File Name
+    cell = row.append("th").classed("table-head", true);
+    cell.text("File Name");
+    //Amount
+    cell = row.append("th").classed("table-head", true);
+    cell.text("Amount");
+    //Date
+    cell = row.append("th").classed("table-head", true);
+    cell.text("Date");
+    //Transaction ID
+    cell = row.append("th").classed("table-head", true);
+    cell.text("TransactionID"); 
+    //Narrative
+    cell = row.append("th").classed("table-head", true);
+    cell.text("Narrative");
 }
 
 //Function to display the headers for possible matches table in a specific format
-function customTableHeaders()
+function possibleTableHeaders()
 {
     //Append a row to display the name of the different files as table headers
     var row = possible_tHead.append("tr");
@@ -110,12 +135,14 @@ function showUnmatchedTable()
             cell.text(value);
         });
     });
+    var caption = d3.select("#unmatched-table > caption > h4");
+    caption.text("Unmatched Reports");
 }
 
 //Function to create and fill possible reports matches table using the specific design for this table
 function showPossibleTable()
 {
-    customTableHeaders();
+    possibleTableHeaders();
     Object.entries(response["possible"]).forEach(element => {
         var row = possible_tBody.append("tr");
         console.log(`${element[1]["TransactionID"]}`);
@@ -146,6 +173,9 @@ function showPossibleTable()
         var cell = row.append("td");
         cell.text(element[1]["TransactionNarrative_2"]);
     });
+
+    var caption = d3.select("#possible-table > caption > h4");
+    caption.text("Possible Matches");
 }
 
 function updateFile1(data)

@@ -20,16 +20,16 @@
                     <h1 class="display-3 text-light">Transaction Compare</h1>
                     <form id="formUpload" method="POST" enctype = "multipart/form-data">
                         <div class="form-group">
-                            <div class="file-input">
+                            <div class="file-input mb-3">
                                 <label for="clientFile">Client File</label>
                                 <input type="file" class="form-control-file" id="clientFile" name="file1" accept=".csv" required>
                             </div>
-                            <div class="file-input">
+                            <div class="file-input mb-3">
                                 <label for="companyFile">Company File</label>
                                 <input type="file" class="form-control-file" id="companyFile" name="file2" accept=".csv" required>
                             </div>
                             <div>
-                                <input type="submit" id="load_button" value="Upload Files">
+                                <input class="btn btn-light btn-lg border border-primary mt-3" type="submit" id="load_button" value="Upload Files">
                             </div>
                         </div>
                     </form>
@@ -38,42 +38,43 @@
             <!--Second row-->
             <div class="row">
                 <div class="col align-self-start">
-                    <div class="card">
+                    <div class="card border border-dark">
                         <div class="card-body">
-                            <h3 id="file1-title" class="card-title">Client File</h3>
+                            <h2 id="file1-title" class="card-header">Client File</h2>
                             <ul class="list-group list-group-flush">
-                                <li id="file1-total" class="list-group-item">Total Records 0</li>
-                                <li id="file1-match" class="list-group-item">Perfect Matches 0</li>
-                                <li id="file1-possible" class="list-group-item">Possible Matches 0</li>
-                                <li id="file1-unmatch" class="list-group-item">Unmatched 0</li>
+                                <li id="file1-total" class="list-group-item">Total Records: 0</li>
+                                <li id="file1-match" class="list-group-item">Perfect Matches: 0</li>
+                                <li id="file1-possible" class="list-group-item">Possible Matches: 0</li>
+                                <li id="file1-unmatch" class="list-group-item">Unmatched: 0</li>
                             </ul>
                         </div>
                     </div>
                 </div>
                 <div class="col align-self-end">
-                    <div class="card">
+                    <div class="card border border-dark">
                         <div class="card-body">
-                            <h3 id="file2-title" class="card-title">Company File</h3>
+                            <h2 id="file2-title" class="card-header">Company File</h2>
                             <ul class="list-group list-group-flush">
-                                <li id="file2-total" class="list-group-item">Total Records 0</li>
-                                <li id="file2-match" class="list-group-item">Perfect Mtaches 0</li>
-                                <li id="file2-possible" class="list-group-item">Possible Matches 0</li>
-                                <li id="file2-unmatch" class="list-group-item">Unmatched 0</li>
+                                <li id="file2-total" class="list-group-item">Total Records: 0</li>
+                                <li id="file2-match" class="list-group-item">Perfect Mtaches: 0</li>
+                                <li id="file2-possible" class="list-group-item">Possible Matches: 0</li>
+                                <li id="file2-unmatch" class="list-group-item">Unmatched: 0</li>
                             </ul>
                         </div>
                     </div>
                 </div>
             </div>
             <!--Third row-->
-            <div class="row">
-                <button type="button" class="btn btn-primary btn-lg btn-block" id="unmatched-button">Show unmatched</button>
+            <div class="row mt-2 mb-2">
+                <button type="button" class="btn btn-primary btn-lg btn-block" id="unmatched-button" disabled>Show possible and unmatched</button>
             </div>
             <!--Fourth row-->
             <div class="row">
-                <div class="col-md-10">
-                    <div id="table-area" class="">
-                        <table id="unmatched-table" class="table table-striped">
-                            <thead></thead>
+                <div class="col-12 mt-2">
+                    <div id="table-area">
+                        <table id="unmatched-table" class="table table-light table-hover table-bordered">
+                            <caption><h4></h4></caption>
+                            <thead class= "thead-light"></thead>
                             <tbody></tbody>
                         </table>
                     </div>
@@ -81,10 +82,11 @@
             </div>
             <!--Fifth row-->
             <div class="row">
-                <div class="col-md-10">
-                    <div id="table-area" class="">
-                        <table id="possible-table" class="table table-striped">
-                            <thead></thead>
+                <div class="col-12">
+                    <div id="table-area">
+                        <table id="possible-table" class="table table-light table-hover table-bordered">
+                            <caption><h4></h4></caption>
+                            <thead class= "thead-light"></thead>
                             <tbody></tbody>
                         </table>
                     </div>

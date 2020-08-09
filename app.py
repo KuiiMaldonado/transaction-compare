@@ -104,6 +104,10 @@ def reconciliation(client_df, tutuka_df, f1_name, f2_name):
     #Reset the index of the dataframe
     sortedTutuka.index = [x for x in range(0, len(sortedTutuka))]
 
+    #Fill blanks cells (if exist) with
+    sortedClient.fillna(value=0, axis=1, inplace=True)
+    sortedTutuka.fillna(value=0, axis=1, inplace=True)
+
     # We start the iteration through the dataframes comparing each index within both dataframes. This is possible because we have sorted the data
     # And We dropped duplicates too
     index = 0
