@@ -18,7 +18,7 @@ Making a web application where a financial reconciliation between 2 datasets (cs
 
 ## How it works...
 On the main page you will see two buttons you can use to browse and pick the csv files you want to reconciliate. Once you choose both, click on the "Upload Files" button.
-![Main Page](static/images/transaction_background.png)
+![Main Page](static/images/mainPage.png)
 
 Scrolling down the page yo will find out to boxes where the results will be displayed after you upload both files.
 ![Result boxes](static/images/cards.png)
